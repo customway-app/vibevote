@@ -1,0 +1,283 @@
+@tailwind base;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg0: #070310;
+  --bg1: #0c0620;
+  --glass: rgba(255, 255, 255, 0.08);
+  --glass-border: rgba(255, 255, 255, 0.14);
+  /* These are overridden at runtime from WP settings */
+  --accent0: #ff0088;
+  --accent1: #7e5fec;
+  --accent2: #22d3ee;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+/* Layout container: full-width on mobile, centered on desktop */
+.app-header,
+.app-main {
+  width: 100%;
+  max-width: 72rem;
+  margin-left: auto;
+  margin-right: auto;
+  /* Keep left/right padding symmetric even if a UA reports uneven safe-area insets */
+  --safe-x: max(16px, env(safe-area-inset-left), env(safe-area-inset-right));
+  padding-left: var(--safe-x);
+  padding-right: var(--safe-x);
+}
+
+@media (max-width: 640px) {
+  .app-header,
+  .app-main {
+    max-width: none;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  overflow-x: hidden;
+}
+
+body {
+  font-family: "Sora", ui-sans-serif, system-ui;
+  background:
+    radial-gradient(900px 500px at 15% 15%, color-mix(in srgb, var(--accent0) 25%, transparent), transparent 65%),
+    radial-gradient(700px 420px at 85% 20%, color-mix(in srgb, var(--accent1) 25%, transparent), transparent 60%),
+    radial-gradient(800px 520px at 60% 95%, rgba(34, 211, 238, 0.18), transparent 65%),
+    linear-gradient(180deg, var(--bg0), var(--bg1));
+}
+
+.noise::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" stitchTiles="stitch"/></filter><rect width="160" height="160" filter="url(%23n)" opacity="0.35"/></svg>');
+  mix-blend-mode: overlay;
+  opacity: 0.08;
+}
+
+.glass {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 font-medium transition;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, rgba(255, 59, 212, 0.95), rgba(139, 92, 246, 0.95));
+  box-shadow: 0 10px 25px rgba(255, 59, 212, 0.15);
+}
+
+.btn-primary:hover {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+}
+
+.btn-voted {
+  background: #28a745;
+  box-shadow: 0 10px 25px rgba(40, 167, 69, 0.18);
+}
+
+.btn-voted:hover {
+  filter: brightness(1.04);
+  transform: translateY(-1px);
+}
+
+.btn:disabled {
+  opacity: 0.9;
+  cursor: not-allowed;
+}
+
+.btn-ghost {
+  @apply glass hover:bg-white/10;
+}
+
+@media (max-width: 640px) {
+  .btn-ghost {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+}
+
+.input {
+  @apply w-full rounded-xl bg-black/30 px-4 py-3 text-sm outline-none ring-1 ring-white/10 placeholder:text-white/40 focus:ring-white/20;
+}
+
+/* ========================================
+   SUCCESS MODAL (match WP plugin)
+   ======================================== */
+
+.vote-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease;
+}
+
+.vote-modal-backdrop.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.vote-success-modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1001;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease;
+}
+
+.vote-success-modal.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.vote-success-modal .modal-content {
+  width: min(520px, calc(100vw - 48px));
+  background: rgba(17, 24, 39, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  box-shadow: 0 18px 55px rgba(0, 0, 0, 0.45);
+  padding: 22px;
+  transform: translateY(6px) scale(0.99);
+  transition: transform 180ms ease;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.vote-success-modal.visible .modal-content {
+  transform: translateY(0) scale(1);
+}
+
+.vote-success-modal .modal-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.vote-success-modal .modal-title {
+  margin: 0;
+  font-size: 34px;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+}
+
+.vote-success-modal .modal-body {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.vote-success-modal .modal-message {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.vote-success-modal .modal-footer {
+  margin-top: 18px;
+  display: flex;
+  justify-content: center;
+}
+
+.vote-success-modal .close-button {
+  border: 0;
+  color: #ffffff;
+  font-weight: 800;
+  padding: 10px 18px;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 10px 25px rgba(16, 185, 129, 0.22);
+}
+
+.vote-success-modal .close-button:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+
+.vote-success-modal .close-button:active {
+  transform: translateY(0);
+}
+
+/* Media embed modal */
+.media-modal-content {
+  padding: 16px;
+}
+
+.media-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.media-modal-title {
+  color: rgba(255, 255, 255, 0.92);
+  font-weight: 800;
+  font-size: 14px;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.media-modal-close {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.media-modal-body {
+  margin-top: 12px;
+}
+
+.media-embed {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.media-embed-spotify {
+  aspect-ratio: auto;
+  height: 152px;
+}
+
+@media (max-width: 520px) {
+  .media-embed {
+    aspect-ratio: 1 / 1;
+  }
+}

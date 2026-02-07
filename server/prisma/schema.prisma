@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum SongStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Song {
+  id            Int        @id @default(autoincrement())
+  artist        String
+  title         String
+  year          Int?
+  genre         String?
+  youtubeUrl    String?
+  spotifyUrl    String?
+  albumArtUrl   String?
+
+  votes         Int        @default(0)
+  previousRank  Int?
+  currentRank   Int?
+
+  status        SongStatus @default(PENDING)
+
+  submitterEmail     String?
+  submitterFirstName String?
+  submitterLastName  String?
+
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  votesLog      Vote[]
+
+  @@index([status, votes])
+  @@index([artist])
+  @@index([title])
+  @@index([genre])
+  @@index([year])
+}
+
+model Vote {
+  id        Int      @id @default(autoincrement())
+  songId    Int
+  voterHash String
+  ip        String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  song      Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
+
+  @@unique([songId, voterHash])
+  @@index([createdAt])
+}
