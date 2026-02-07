@@ -8,7 +8,7 @@ export default defineConfig({
     proxy: {
       // Dev-only proxy to avoid CORS when VITE_WP_BASE_URL is empty.
       '/wp-json': {
-        target: 'http://vibevote.local',
+        target: 'https://multimindmedia.nl',
         changeOrigin: true,
         secure: true,
       },
