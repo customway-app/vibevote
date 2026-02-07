@@ -174,12 +174,13 @@ export default function SubmitPage() {
       reset();
     } catch (e: any) {
       const msg = String(e?.message || 'Submission failed');
+      const userMessage = String((e as any)?.userMessage || '');
       if (msg === 'missing_app_key') {
-        setStatus({ kind: 'err', msg: 'Missing VITE_APP_API_KEY (required for auth).' });
+        setStatus({ kind: 'err', msg: userMessage || 'Missing VITE_APP_API_KEY (required for auth).' });
       } else if (msg === 'unauthorized') {
-        setStatus({ kind: 'err', msg: 'Unauthorized. Check VITE_APP_API_KEY or token.' });
+        setStatus({ kind: 'err', msg: userMessage || 'Unauthorized. Check VITE_APP_API_KEY or token.' });
       } else {
-        setStatus({ kind: 'err', msg });
+        setStatus({ kind: 'err', msg: userMessage || msg });
       }
     }
   }

@@ -2,6 +2,27 @@ const WP_BASE_URL = (import.meta.env.VITE_WP_BASE_URL || '').replace(/\/$/, '');
 const APP_API_KEY = import.meta.env.VITE_APP_API_KEY || '';
 const ADMIN_KEY = import.meta.env.VITE_ADMIN_KEY || '';
 
+type ApiError = Error & { userMessage?: string; status?: number };
+
+function makeApiError(code: string, userMessage?: string, status?: number): ApiError {
+  const err = new Error(code) as ApiError;
+  if (userMessage) err.userMessage = userMessage;
+  if (typeof status === 'number') err.status = status;
+  return err;
+}
+
+async function safeJson(res: Response): Promise<any | null> {
+  try {
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+function corsHint() {
+  return 'If you are the site owner: enable CORS in WordPress -> Top 100 App.';
+}
+
 function voterKeyStorageKey() {
   return `top100.voterKey.${WP_BASE_URL || 'proxy'}`;
 }
@@ -135,7 +156,9 @@ async function getAuthToken(): Promise<string | null> {
   const authRequired = Number(appData.settings?.auth_required || 0);
   if (!authRequired) return null;
 
-  if (!APP_API_KEY) throw new Error('missing_app_key');
+  if (!APP_API_KEY) {
+    throw makeApiError('missing_app_key', 'Missing app API key. Site owner: set VITE_APP_API_KEY.');
+  }
 
   const existing = localStorage.getItem(tokenStorageKey()) || '';
   const exp = Number(localStorage.getItem(tokenExpStorageKey()) || '0');
@@ -143,14 +166,25 @@ async function getAuthToken(): Promise<string | null> {
     return existing;
   }
 
-  const res = await fetch(wpUrl('/auth'), {
-    headers: {
-      'X-App-Key': APP_API_KEY,
-    },
-  });
-  if (!res.ok) throw new Error('auth_failed');
-  const json = (await res.json()) as { success: boolean; token: string; expires_in: number; auth_required: number };
-  if (!json?.success || !json.token) throw new Error('auth_failed');
+  let res: Response;
+  try {
+    res = await fetch(wpUrl('/auth'), {
+      headers: {
+        'X-App-Key': APP_API_KEY,
+      },
+    });
+  } catch {
+    throw makeApiError('auth_failed', `Can't reach auth endpoint. ${corsHint()}`);
+  }
+
+  const json = (await safeJson(res)) as { success?: boolean; token?: string; expires_in?: number; auth_required?: number; error?: string; message?: string } | null;
+  if (!res.ok || !json?.success || !json?.token) {
+    const code = String(json?.error || 'auth_failed');
+    const msg =
+      String(json?.message || '') ||
+      (res.status === 401 ? 'Unauthorized. Check your API key.' : `Auth failed (HTTP ${res.status}). ${corsHint()}`);
+    throw makeApiError(code, msg, res.status);
+  }
 
   localStorage.setItem(tokenStorageKey(), json.token);
   localStorage.setItem(tokenExpStorageKey(), String(Date.now() + Number(json.expires_in || 0) * 1000));
@@ -188,19 +222,24 @@ function mapTrackToSong(t: ConnectorTrack): Song {
 
 export async function vote(songId: number) {
   const token = await getAuthToken();
-  const res = await fetch(wpUrl('/vote'), {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { 'X-App-Token': token } : null),
-    },
-    body: JSON.stringify({ track_id: songId, voter_key: getOrCreateVoterKey() }),
-  });
+  let res: Response;
+  try {
+    res = await fetch(wpUrl('/vote'), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { 'X-App-Token': token } : null),
+      },
+      body: JSON.stringify({ track_id: songId, voter_key: getOrCreateVoterKey() }),
+    });
+  } catch {
+    throw makeApiError('vote_failed', `Can't reach voting endpoint. ${corsHint()}`);
+  }
 
-  const json = (await res.json()) as any;
+  const json = await safeJson(res);
   if (!res.ok || !json?.success) {
-    const err = new Error(json?.error || 'vote_failed');
-    (err as any).userMessage = json?.message;
+    const code = String(json?.error || 'vote_failed');
+    const err = makeApiError(code, String(json?.message || 'Vote failed. Try again.'), res.status);
     throw err;
   }
 
@@ -223,34 +262,38 @@ export type SubmissionPayload = {
 
 export async function submitSong(payload: SubmissionPayload) {
   const token = await getAuthToken();
-  const res = await fetch(wpUrl('/submission'), {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { 'X-App-Token': token } : null),
-    },
-    body: JSON.stringify({
-      artist: payload.artist,
-      title: payload.title,
-      year: payload.year,
-      genre: payload.genre,
-      youtube_url: payload.youtubeUrl,
-      spotify_url: payload.spotifyUrl,
-      album_art_url: payload.albumArtUrl,
-      email: payload.email,
-      first_name: payload.firstName,
-      last_name: payload.lastName,
-      captcha_token: payload.captchaToken,
-    }),
-  });
-  let data: any = null;
+  let res: Response;
   try {
-    data = (await res.json()) as any;
+    res = await fetch(wpUrl('/submission'), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { 'X-App-Token': token } : null),
+      },
+      body: JSON.stringify({
+        artist: payload.artist,
+        title: payload.title,
+        year: payload.year,
+        genre: payload.genre,
+        youtube_url: payload.youtubeUrl,
+        spotify_url: payload.spotifyUrl,
+        album_art_url: payload.albumArtUrl,
+        email: payload.email,
+        first_name: payload.firstName,
+        last_name: payload.lastName,
+        captcha_token: payload.captchaToken,
+      }),
+    });
   } catch {
-    // Non-JSON response (e.g. WP fatal error HTML)
-    throw new Error('submission_failed');
+    throw makeApiError('submission_failed', `Can't reach submission endpoint. ${corsHint()}`);
   }
-  if (!res.ok || !data?.success) throw new Error(data?.message || data?.error || 'submission_failed');
+
+  const data = await safeJson(res);
+  if (!res.ok || !data?.success) {
+    const code = String(data?.error || 'submission_failed');
+    const msg = String(data?.message || 'Submission failed. Try again.');
+    throw makeApiError(code, msg, res.status);
+  }
   // Connector returns { success, track_id, is_pending }
   return data as { success: true; track_id: number; is_pending?: boolean };
 }
