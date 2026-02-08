@@ -5,21 +5,25 @@ import AdminPage from './pages/AdminPage';
 
 function Nav() {
   const loc = useLocation();
-  const isActive = (path: string) => (loc.pathname === path ? 'text-white' : 'text-white/70');
+  const isActive = (path: string) => loc.pathname === path;
+  const linkClass = (active: boolean) =>
+    active
+      ? 'rounded-xl bg-white/10 px-3 py-2 text-center text-white ring-1 ring-white/15'
+      : 'rounded-xl px-3 py-2 text-center text-white/70 ring-1 ring-white/10 hover:bg-white/5 hover:text-white';
   return (
     <header className="app-header w-full pt-6">
-      <div className="glass flex items-center justify-between rounded-2xl px-4 py-3 shadow-glow">
-        <Link to="/" className="font-display text-lg tracking-tight">
+      <div className="glass flex flex-col gap-3 rounded-2xl px-4 py-3 shadow-glow sm:flex-row sm:items-center sm:justify-between">
+        <Link to="/" className="font-display text-base tracking-tight sm:text-lg">
           Top 100 <span className="text-white/70">Voting</span>
         </Link>
-        <nav className="flex items-center gap-4 text-sm">
-          <Link className={isActive('/')} to="/">
+        <nav className="grid w-full grid-cols-3 gap-2 text-sm sm:flex sm:w-auto sm:items-center sm:gap-4">
+          <Link className={linkClass(isActive('/'))} to="/">
             Chart
           </Link>
-          <Link className={isActive('/submit')} to="/submit">
+          <Link className={linkClass(isActive('/submit'))} to="/submit">
             Submit
           </Link>
-          <Link className={isActive('/admin')} to="/admin">
+          <Link className={linkClass(isActive('/admin'))} to="/admin">
             Pending
           </Link>
         </nav>

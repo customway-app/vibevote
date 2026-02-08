@@ -5,6 +5,7 @@ import { fetchAppData, fetchPendingCount, tracksToSongs, type AppData, type Song
 import VoteSuccessModal from '../components/VoteSuccessModal';
 import MediaEmbedModal from '../components/MediaEmbedModal';
 import GenrePickerModal from '../components/GenrePickerModal';
+import ShareModal from '../components/ShareModal';
 
 const decades = ['70s', '80s', '90s', '00s'] as const;
 
@@ -61,6 +62,11 @@ export default function ChartPage() {
     kind: 'youtube',
     url: '',
     title: '',
+  });
+
+  const [shareModal, setShareModal] = useState<{ open: boolean; target: { title: string; text: string; url: string } | null }>({
+    open: false,
+    target: null,
   });
 
   useEffect(() => {
@@ -268,6 +274,19 @@ export default function ChartPage() {
               onVote={handleVote}
               isVoted={voted.has(s.id)}
               onOpenMedia={(kind, url, title) => setMediaModal({ open: true, kind, url, title })}
+              onShare={(song) => {
+                const base = `${window.location.origin}${window.location.pathname}`;
+                const u = new URL(base);
+                u.searchParams.set('track', String(song.id));
+                setShareModal({
+                  open: true,
+                  target: {
+                    title: `${song.title} - ${song.artist}`,
+                    text: `Vote for ${song.artist} - ${song.title}`,
+                    url: u.toString(),
+                  },
+                });
+              }}
             />
           ))}
         </div>
@@ -305,6 +324,13 @@ export default function ChartPage() {
           setGenreModalOpen(false);
         }}
         onClose={() => setGenreModalOpen(false)}
+      />
+
+      <ShareModal
+        open={shareModal.open}
+        target={shareModal.target}
+        onCopied={() => setToast('Link copied')}
+        onClose={() => setShareModal({ open: false, target: null })}
       />
     </div>
   );

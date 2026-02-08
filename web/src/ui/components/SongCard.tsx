@@ -8,8 +8,9 @@ export default function SongCard(props: {
   onVote: (id: number) => Promise<void>;
   isVoted: boolean;
   onOpenMedia: (kind: 'youtube' | 'spotify', url: string, title: string) => void;
+  onShare: (song: Song) => void;
 }) {
-  const { song, onVote, isVoted, onOpenMedia } = props;
+  const { song, onVote, isVoted, onOpenMedia, onShare } = props;
   const [busy, setBusy] = useState(false);
   const [popped, setPopped] = useState(false);
 
@@ -133,12 +134,7 @@ export default function SongCard(props: {
 
           <button
             className="btn btn-ghost h-10 px-3 text-xs"
-            onClick={() => {
-              const url = window.location.href;
-              const text = `Vote for ${song.artist} - ${song.title}`;
-              const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
-              window.open(shareUrl, '_blank', 'noopener,noreferrer');
-            }}
+            onClick={() => onShare(song)}
           >
             <span className="hidden sm:inline">Share</span>
             <svg className="sm:hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
