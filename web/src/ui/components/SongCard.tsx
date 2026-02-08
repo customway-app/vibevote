@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react';
-import { useMemo, useState } from 'react';
 import clsx from 'clsx';
 import type { Song } from '../../lib/api';
 import RankMove from './RankMove';
@@ -108,11 +107,10 @@ export default function SongCard(props: {
             </div>
           </div>
 
-          <div className="mt-3 flex w-full flex-wrap items-center gap-2">
+          <div className="mt-3 flex w-full items-center gap-2">
             <button
               className={clsx(
-                // Mobile-first: compact pill vote button
-                'btn h-11 whitespace-nowrap px-5',
+                'btn h-11 min-w-0 flex-1 justify-between',
                 isVoted ? 'btn-voted' : 'btn-primary',
                 popped && 'animate-pop'
               )}
@@ -123,35 +121,33 @@ export default function SongCard(props: {
               <span className="shrink-0 rounded-lg bg-black/25 px-2 py-0.5 text-xs tabular-nums">{song.votes}</span>
             </button>
 
-            <div className="ml-auto flex items-center gap-2">
-              {song.youtubeUrl ? (
-                <button
-                  type="button"
-                  className="btn-ghost btn-icon"
-                  onClick={() => onOpenMedia('youtube', song.youtubeUrl || '', `${song.title} - ${song.artist}`)}
-                  aria-label="YouTube"
-                  title="YouTube"
-                >
-                  <IconYouTube />
-                </button>
-              ) : null}
-
-              {song.spotifyUrl ? (
-                <button
-                  type="button"
-                  className="btn-ghost btn-icon"
-                  onClick={() => onOpenMedia('spotify', song.spotifyUrl || '', `${song.title} - ${song.artist}`)}
-                  aria-label="Spotify"
-                  title="Spotify"
-                >
-                  <IconSpotify />
-                </button>
-              ) : null}
-
-              <button type="button" className="btn-ghost btn-icon" onClick={() => onShare(song)} aria-label="Share" title="Share">
-                <IconShare />
+            {song.youtubeUrl ? (
+              <button
+                type="button"
+                className="btn btn-ghost btn-icon"
+                onClick={() => onOpenMedia('youtube', song.youtubeUrl || '', `${song.title} - ${song.artist}`)}
+                aria-label="YouTube"
+                title="YouTube"
+              >
+                <IconYouTube />
               </button>
-            </div>
+            ) : null}
+
+            {song.spotifyUrl ? (
+              <button
+                type="button"
+                className="btn btn-ghost btn-icon"
+                onClick={() => onOpenMedia('spotify', song.spotifyUrl || '', `${song.title} - ${song.artist}`)}
+                aria-label="Spotify"
+                title="Spotify"
+              >
+                <IconSpotify />
+              </button>
+            ) : null}
+
+            <button type="button" className="btn btn-ghost btn-icon" onClick={() => onShare(song)} aria-label="Share" title="Share">
+              <IconShare />
+            </button>
           </div>
         </div>
       </div>
