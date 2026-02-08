@@ -96,12 +96,10 @@ export default function SongCard(props: {
         <div className="mt-3 grid grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:items-center sm:gap-2">
           <button
             className={clsx(
-              // Mobile: keep it prominent but not comically wide
-              'btn h-10 w-full max-w-[280px] justify-center sm:w-auto sm:max-w-none',
+              'btn h-10 w-full justify-between sm:w-auto sm:justify-center',
               isVoted ? 'btn-voted' : 'btn-primary',
               popped && 'animate-pop'
             )}
-            style={{ marginLeft: 'auto', marginRight: 'auto' }}
             onClick={handleVote}
             disabled={busy || isVoted}
           >
@@ -109,7 +107,7 @@ export default function SongCard(props: {
             <span className="rounded-lg bg-black/25 px-2 py-0.5 text-xs tabular-nums">{song.votes}</span>
           </button>
 
-          <div className="flex w-full flex-wrap items-center justify-center gap-2 sm:contents">
+          <div className="flex flex-wrap items-center gap-2 sm:contents">
             {song.youtubeUrl ? (
               <button
                 type="button"
