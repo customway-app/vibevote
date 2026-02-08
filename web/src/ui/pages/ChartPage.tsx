@@ -202,19 +202,20 @@ export default function ChartPage() {
         </div>
       </div>
 
-        <div className="mt-6 grid gap-4">
-          <div className="glass flex flex-wrap items-center gap-3 rounded-2xl p-4 shadow-glow">
+      <div className="mt-6 grid gap-4">
+        <div className="glass flex flex-col gap-3 rounded-2xl p-4 shadow-glow md:flex-row md:flex-wrap md:items-center md:justify-between">
+          <div className="flex min-w-0 flex-1 items-center gap-3">
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search by artist, title, genre, year…"
-              className="min-w-0 flex-1 rounded-xl bg-black/30 px-4 py-3 text-sm outline-none ring-1 ring-white/10 placeholder:text-white/40 focus:ring-white/20"
+              className="min-w-0 w-full rounded-xl bg-black/30 px-4 py-3 text-sm outline-none ring-1 ring-white/10 placeholder:text-white/40 focus:ring-white/20"
             />
-
+          </div>
+          <div className="flex flex-wrap gap-2">
             <button
-              className="btn btn-ghost h-10 shrink-0 px-3 text-xs"
+              className="btn btn-ghost h-10 px-3 text-xs"
               onClick={() => {
-                setSearch('');
                 setActiveGenre(null);
                 setActiveDecade(null);
               }}
@@ -222,6 +223,7 @@ export default function ChartPage() {
               Reset
             </button>
           </div>
+        </div>
 
         <div className="flex flex-wrap gap-2">
           {decades.map((d) => (
