@@ -87,6 +87,11 @@ body {
   @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 font-medium transition;
 }
 
+/* Square icon button tuned for touch */
+.btn-icon {
+  @apply inline-flex h-11 w-11 items-center justify-center rounded-xl;
+}
+
 .btn-primary {
   background: linear-gradient(135deg, rgba(255, 59, 212, 0.95), rgba(139, 92, 246, 0.95));
   box-shadow: 0 10px 25px rgba(255, 59, 212, 0.15);
