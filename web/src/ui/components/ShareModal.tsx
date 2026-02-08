@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+
 type ShareTarget = {
   title: string;
   text: string;
