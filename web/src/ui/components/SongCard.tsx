@@ -106,7 +106,7 @@ export default function SongCard(props: {
           {song.youtubeUrl ? (
             <button
               type="button"
-              className="btn btn-ghost h-10 w-10 px-0 text-xs sm:w-auto sm:px-3"
+              className="btn btn-ghost h-10 px-3 text-xs whitespace-nowrap"
               onClick={() => onOpenMedia('youtube', song.youtubeUrl || '', `${song.title} - ${song.artist}`)}
               aria-label="YouTube"
               title="YouTube"
@@ -121,7 +121,7 @@ export default function SongCard(props: {
           {song.spotifyUrl ? (
             <button
               type="button"
-              className="btn btn-ghost h-10 w-10 px-0 text-xs sm:w-auto sm:px-3"
+              className="btn btn-ghost h-10 px-3 text-xs whitespace-nowrap"
               onClick={() => onOpenMedia('spotify', song.spotifyUrl || '', `${song.title} - ${song.artist}`)}
               aria-label="Spotify"
               title="Spotify"
@@ -133,7 +133,7 @@ export default function SongCard(props: {
             </button>
           ) : null}
 
-          <button className="btn btn-ghost h-10 w-10 px-0 text-xs sm:w-auto sm:px-3" onClick={() => onShare(song)}>
+          <button className="btn btn-ghost h-10 px-3 text-xs whitespace-nowrap" onClick={() => onShare(song)}>
             <span className="hidden sm:inline">Share</span>
             <svg className="sm:hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path d="M15 8a3 3 0 1 0-2.83-4H12a3 3 0 0 0 0 6c.74 0 1.41-.27 1.92-.72l4.02 2.01a3 3 0 0 0 0 1.42l-4.02 2.01A3 3 0 1 0 15 20a3 3 0 0 0-2.83-4H12a3 3 0 0 0 1.92.72l4.02-2.01A3 3 0 1 0 18 10c-.74 0-1.41.27-1.92.72l-4.02-2.01A2.99 2.99 0 0 0 15 8Z" fill="currentColor" />
