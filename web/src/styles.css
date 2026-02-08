@@ -228,6 +228,8 @@ body {
 /* Media embed modal */
 .media-modal-content {
   padding: 16px;
+  /* Wider media modal so Spotify artwork/card feels like WP embed */
+  width: min(920px, calc(100vw - 32px));
 }
 
 .media-modal-header {
@@ -272,11 +274,16 @@ body {
 
 .media-embed-spotify {
   aspect-ratio: auto;
-  height: 152px;
+  /* Taller Spotify card (bigger artwork + controls) */
+  height: 460px;
 }
 
 @media (max-width: 520px) {
   .media-embed {
     aspect-ratio: 1 / 1;
+  }
+
+  .media-embed-spotify {
+    height: 320px;
   }
 }
