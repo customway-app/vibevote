@@ -38,6 +38,14 @@ body {
   }
 }
 
+@media (max-width: 420px) {
+  .app-header,
+  .app-main {
+    padding-left: max(12px, env(safe-area-inset-left));
+    padding-right: max(12px, env(safe-area-inset-right));
+  }
+}
+
 *,
 *::before,
 *::after {
