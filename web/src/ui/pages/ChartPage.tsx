@@ -57,7 +57,7 @@ export default function ChartPage() {
     }
   });
 
-  const [mediaModal, setMediaModal] = useState<{ open: boolean; kind: 'youtube' | 'spotify'; url: string; title: string }>({
+  const [mediaModal, setMediaModal] = useState<{ open: boolean; kind: 'youtube' | 'spotify'; url: string; title: string; votes?: number }>({
     open: false,
     kind: 'youtube',
     url: '',
@@ -273,7 +273,7 @@ export default function ChartPage() {
               song={s}
               onVote={handleVote}
               isVoted={voted.has(s.id)}
-              onOpenMedia={(kind, url, title) => setMediaModal({ open: true, kind, url, title })}
+              onOpenMedia={(kind, url, title) => setMediaModal({ open: true, kind, url, title, votes: s.votes })}
               onShare={(song) => {
                 const base = `${window.location.origin}${window.location.pathname}`;
                 const u = new URL(base);
@@ -310,6 +310,7 @@ export default function ChartPage() {
         kind={mediaModal.kind}
         url={mediaModal.url}
         title={mediaModal.title}
+        votes={mediaModal.votes}
         onClose={() => setMediaModal({ open: false, kind: 'youtube', url: '', title: '' })}
       />
 

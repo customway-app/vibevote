@@ -31,7 +31,8 @@ function spotifyEmbedUrl(url: string) {
     if (parts.length < 2) return null;
     const type = parts[0];
     const id = parts[1];
-    return `https://open.spotify.com/embed/${encodeURIComponent(type)}/${encodeURIComponent(id)}`;
+    // Use the full card embed and request the dark theme.
+    return `https://open.spotify.com/embed/${encodeURIComponent(type)}/${encodeURIComponent(id)}?utm_source=top100&theme=0`;
   } catch {
     return null;
   }
@@ -42,6 +43,7 @@ export default function MediaEmbedModal(props: {
   kind: 'youtube' | 'spotify';
   url: string;
   title: string;
+  votes?: number;
   onClose: () => void;
 }) {
   useEffect(() => {
@@ -62,7 +64,14 @@ export default function MediaEmbedModal(props: {
       <div className="vote-success-modal visible" role="dialog" aria-modal="true" aria-label={props.title}>
         <div className="modal-content media-modal-content">
           <div className="media-modal-header">
-            <div className="media-modal-title">{props.title}</div>
+            <div className="flex min-w-0 items-center gap-2">
+              <div className="media-modal-title">{props.title}</div>
+              {typeof props.votes === 'number' ? (
+                <span className="rounded-full bg-emerald-400/15 px-3 py-1 text-xs font-semibold text-emerald-100 ring-1 ring-emerald-200/20">
+                  {props.votes} votes
+                </span>
+              ) : null}
+            </div>
             <button type="button" className="media-modal-close" onClick={props.onClose} aria-label="Close">
               x
             </button>
@@ -75,7 +84,7 @@ export default function MediaEmbedModal(props: {
                 title={props.title}
                 loading="lazy"
                 allow={props.kind === 'youtube' ? 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture' : 'autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture'}
-                allowFullScreen
+                allowFullScreen={props.kind === 'youtube'}
               />
             ) : (
               <div className="text-sm text-white/70">Invalid media URL.</div>
