@@ -27,8 +27,12 @@ body {
   margin-left: auto;
   margin-right: auto;
   /* Keep content inside iOS safe areas without over-padding */
-  padding-left: max(16px, env(safe-area-inset-left));
-  padding-right: max(16px, env(safe-area-inset-right));
+  padding-left: max(12px, env(safe-area-inset-left));
+  padding-right: max(12px, env(safe-area-inset-right));
+}
+
+.app-main {
+  overflow-x: hidden;
 }
 
 @media (max-width: 640px) {
@@ -110,9 +114,15 @@ body {
 
 @media (max-width: 640px) {
   .btn-ghost {
-    padding-left: 10px;
-    padding-right: 10px;
+    padding-left: 8px;
+    padding-right: 8px;
   }
+}
+
+/* Prevent the noise wrapper from creating horizontal scroll */
+.noise {
+  overflow-x: hidden;
+  width: 100%;
 }
 
 .input {

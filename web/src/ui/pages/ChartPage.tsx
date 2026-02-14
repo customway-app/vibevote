@@ -183,10 +183,10 @@ export default function ChartPage() {
   }
 
   return (
-    <div>
-      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+    <div className="w-full min-w-0 overflow-x-hidden">
+      <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
-          <h1 className="font-display text-3xl tracking-tight">{settings?.chart_title || 'Top 100 Chart'}</h1>
+          <h1 className="font-display text-2xl tracking-tight sm:text-3xl">{settings?.chart_title || 'Top 100 Chart'}</h1>
           <p className="mt-1 max-w-xl text-sm text-white/70">
             Vote in real time. Rankings shift instantly.
           </p>
@@ -202,8 +202,8 @@ export default function ChartPage() {
         </div>
       </div>
 
-      <div className="mt-6 grid gap-4">
-        <div className="glass flex flex-col gap-3 rounded-2xl p-4 shadow-glow md:flex-row md:items-center md:justify-between">
+      <div className="mt-4 grid gap-3 sm:mt-6 sm:gap-4">
+        <div className="glass flex flex-col gap-3 rounded-2xl p-3 shadow-glow sm:p-4 md:flex-row md:items-center md:justify-between">
           <div className="flex flex-1 items-center gap-3">
             <input
               value={search}
